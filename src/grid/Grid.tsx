@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { PointerEvent } from 'react';
+import type { MouseEvent, PointerEvent } from 'react';
 import type { Order } from '../data/types';
 import { COLUMNS, MIN_COLUMN_WIDTH, buildTemplate, defaultWidths, sumWidths } from './columns';
 import type { SortState } from './sort';
@@ -12,10 +12,12 @@ interface GridProps {
   sort: SortState | null;
   onSort: (key: keyof Order) => void;
   pinned: keyof Order | null;
-  onPin: (key: keyof Order | null) => void;
+    onPin: (key: keyof Order | null) => void;
+  selected: Set<string>;
+  onRowClick: (id: string, event: MouseEvent<HTMLDivElement>) => void;
 }
 
-export function Grid({ orders, sort, onSort, pinned, onPin }: GridProps) {
+export function Grid({ orders, sort, onSort, pinned, onPin, selected, onRowClick }: GridProps) {
   const { ref, onScroll, start, end, totalHeight } = useVirtual(orders.length, ROW_HEIGHT);
   const [widths, setWidths] = useState<number[]>(defaultWidths);
 
@@ -55,12 +57,15 @@ export function Grid({ orders, sort, onSort, pinned, onPin }: GridProps) {
   const rows = [];
   for (let i = start; i < end; i++) {
     const item = orders[i];
+    const isSelected = selected.has(item.id);
     rows.push(
       <div
         key={item.id}
-        className={`grid-row${i % 2 === 1 ? ' odd' : ''}`}
+        className={`grid-row${i % 2 === 1 ? ' odd' : ''}${isSelected ? ' selected' : ''}`}
         role="row"
         aria-rowindex={i + 2}
+        aria-selected={isSelected}
+        onClick={(e) => onRowClick(item.id, e)}
         style={{
           gridTemplateColumns: template,
           height: ROW_HEIGHT,

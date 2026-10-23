@@ -188,3 +188,44 @@ body {
   font-variant-numeric: tabular-nums;
   color: #52606d;
 }
+
+.grid-row {
+  cursor: default;
+  user-select: none;
+}
+
+.grid-row.selected,
+.grid-row.selected:hover {
+  background: #cfe3f7;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.selected-count {
+  min-width: 80px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.btn {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid #c9d0d6;
+  border-radius: 4px;
+  background: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  background: #eef1f4;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
