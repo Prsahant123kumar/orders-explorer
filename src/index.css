@@ -1,3 +1,88 @@
-   * { box-sizing: border-box; }
-   html, body, #root { height: 100%; margin: 0; }
-   body { font-family: system-ui, sans-serif; font-size: 13px; }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  color: #1f2933;
+  background: #ffffff;
+}
+
+.message {
+  padding: 16px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid #d9dee3;
+  background: #f7f8fa;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+}
+
+.grid-scroll {
+  height: 100%;
+  overflow: auto;
+}
+
+.grid-inner {
+  min-width: 100%;
+}
+
+.grid-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  height: 32px;
+  background: #eef1f4;
+}
+
+.grid-row {
+  display: grid;
+}
+
+.cell {
+  padding: 0 8px;
+  line-height: 31px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid #eceff2;
+}
+
+.header-cell {
+  font-weight: 600;
+  border-bottom: 1px solid #c9d0d6;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
