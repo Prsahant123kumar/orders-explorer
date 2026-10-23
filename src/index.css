@@ -64,8 +64,17 @@ body {
   background: #eef1f4;
 }
 
+.grid-body {
+  position: relative;
+}
+
 .grid-row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: grid;
+  will-change: transform;
 }
 
 .cell {

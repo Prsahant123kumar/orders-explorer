@@ -14,7 +14,7 @@ export default function App() {
         <span>{state.orders.length.toLocaleString('en-IN')} orders</span>
       </header>
       <main className="main">
-        <Grid orders={state.orders.slice(0, 200)} />
+        <Grid orders={state.orders} />
       </main>
     </div>
   );
