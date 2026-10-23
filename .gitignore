@@ -1,5 +1,9 @@
 node_modules
 dist
+dist-ssr
 .DS_Store
 *.log
 .vite
+*.local
+.vscode/*
+!.vscode/extensions.json
