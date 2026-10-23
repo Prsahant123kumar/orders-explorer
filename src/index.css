@@ -121,3 +121,44 @@ body {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+.cell.pinned {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #ffffff;
+  border-right: 1px solid #c9d0d6;
+}
+
+.header-cell.pinned {
+  z-index: 3;
+  background: #eef1f4;
+}
+
+.header-cell.pinned:hover {
+  background: #e3e8ed;
+}
+
+.pin-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.header-cell:hover .pin-btn,
+.pin-btn:focus-visible,
+.pin-btn.on {
+  opacity: 1;
+}
+
+.pin-btn:not(.on) {
+  filter: grayscale(1);
+}

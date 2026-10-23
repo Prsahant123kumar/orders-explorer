@@ -10,6 +10,7 @@ const NO_ORDERS: Order[] = [];
 export default function App() {
   const state = useOrders();
   const [sort, setSort] = useState<SortState | null>(null);
+  const [pinned, setPinned] = useState<keyof Order | null>(null);
 
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const sorted = useMemo(() => sortOrders(orders, sort), [orders, sort]);
@@ -24,7 +25,13 @@ export default function App() {
         <span>{sorted.length.toLocaleString('en-IN')} orders</span>
       </header>
       <main className="main">
-        <Grid orders={sorted} sort={sort} onSort={(key) => setSort((s) => nextSort(s, key))} />
+        <Grid
+          orders={sorted}
+          sort={sort}
+          onSort={(key) => setSort((s) => nextSort(s, key))}
+          pinned={pinned}
+          onPin={setPinned}
+        />
       </main>
     </div>
   );
