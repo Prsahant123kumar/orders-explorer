@@ -28,5 +28,16 @@ export const COLUMNS: Column[] = [
   { key: 'notes', label: 'Notes', width: 300, type: 'text', align: 'left', format: (o) => o.notes.replace(/\s+/g, ' ') },
 ];
 
-export const GRID_TEMPLATE = COLUMNS.map((c) => `${c.width}px`).join(' ');
-export const TOTAL_WIDTH = COLUMNS.reduce((sum, c) => sum + c.width, 0);
+export const MIN_COLUMN_WIDTH = 50;
+
+export function defaultWidths(): number[] {
+  return COLUMNS.map((c) => c.width);
+}
+
+export function buildTemplate(widths: number[]): string {
+  return widths.map((w) => `${w}px`).join(' ');
+}
+
+export function sumWidths(widths: number[]): number {
+  return widths.reduce((sum, w) => sum + w, 0);
+}

@@ -87,10 +87,26 @@ body {
 }
 
 .header-cell {
+  position: relative;
   font-weight: 600;
   border-bottom: 1px solid #c9d0d6;
   cursor: pointer;
   user-select: none;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background: #8fa3b5;
 }
 
 .header-cell:hover {
