@@ -1,14 +1,17 @@
 import type { Order } from '../data/types';
 import { COLUMNS, GRID_TEMPLATE, TOTAL_WIDTH } from './columns';
+import type { SortState } from './sort';
 import { useVirtual } from './useVirtual';
 
 export const ROW_HEIGHT = 32;
 
 interface GridProps {
   orders: Order[];
+  sort: SortState | null;
+  onSort: (key: keyof Order) => void;
 }
 
-export function Grid({ orders }: GridProps) {
+export function Grid({ orders, sort, onSort }: GridProps) {
   const { ref, onScroll, start, end, totalHeight } = useVirtual(orders.length, ROW_HEIGHT);
 
   const rows = [];
@@ -54,15 +57,22 @@ export function Grid({ orders }: GridProps) {
     >
       <div className="grid-inner" style={{ width: TOTAL_WIDTH }}>
         <div className="grid-header" role="row" style={{ gridTemplateColumns: GRID_TEMPLATE }}>
-          {COLUMNS.map((col) => (
-            <div
-              key={col.key}
-              role="columnheader"
-              className={`cell header-cell${col.align === 'right' ? ' num' : ''}`}
-            >
-              {col.label}
-            </div>
-          ))}
+          {COLUMNS.map((col) => {
+            const active = sort?.key === col.key;
+            const ariaSort = active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none';
+            return (
+              <div
+                key={col.key}
+                role="columnheader"
+                aria-sort={ariaSort}
+                className={`cell header-cell${col.align === 'right' ? ' num' : ''}`}
+                onClick={() => onSort(col.key)}
+              >
+                {col.label}
+                {active && <span className="sort-icon">{sort.dir === 'asc' ? ' \u25B2' : ' \u25BC'}</span>}
+              </div>
+            );
+          })}
         </div>
         <div className="grid-body" style={{ height: totalHeight }}>
           {rows}
