@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import type { Order } from './data/types';
 import { useOrders } from './data/useOrders';
@@ -13,11 +13,26 @@ export default function App() {
   const [sort, setSort] = useState<SortState | null>(null);
   const [pinned, setPinned] = useState<keyof Order | null>(null);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const anchor = useRef<string | null>(null);
 
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const sorted = useMemo(() => sortOrders(orders, sort), [orders, sort]);
 
-  function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
+    function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
+    if (event.shiftKey && anchor.current !== null) {
+      const from = sorted.findIndex((o) => o.id === anchor.current);
+      const to = sorted.findIndex((o) => o.id === id);
+      if (from !== -1 && to !== -1) {
+        const lo = Math.min(from, to);
+        const hi = Math.max(from, to);
+        const range = new Set<string>();
+        for (let i = lo; i <= hi; i++) range.add(sorted[i].id);
+        setSelected(range);
+        return;
+      }
+    }
+
+    anchor.current = id;
     if (event.ctrlKey || event.metaKey) {
       setSelected((prev) => {
         const next = new Set(prev);
@@ -44,7 +59,10 @@ export default function App() {
             type="button"
             className="btn"
             disabled={selected.size === 0}
-            onClick={() => setSelected(new Set())}
+                        onClick={() => {
+              setSelected(new Set());
+              anchor.current = null;
+            }}
           >
             Clear selection
           </button>
