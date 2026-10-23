@@ -162,3 +162,29 @@ body {
 .pin-btn:not(.on) {
   filter: grayscale(1);
 }
+
+.grid-row {
+  background: #ffffff;
+}
+
+.grid-row.odd {
+  background: #f7f9fb;
+}
+
+.grid-row:hover {
+  background: #e8f0f9;
+}
+
+.grid-row .cell.pinned {
+  background: inherit;
+}
+
+.grid-scroll {
+  scrollbar-width: thin;
+  border-top: 1px solid #d9dee3;
+}
+
+.topbar span {
+  font-variant-numeric: tabular-nums;
+  color: #52606d;
+}

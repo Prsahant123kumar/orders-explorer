@@ -58,7 +58,7 @@ export function Grid({ orders, sort, onSort, pinned, onPin }: GridProps) {
     rows.push(
       <div
         key={item.id}
-        className="grid-row"
+        className={`grid-row${i % 2 === 1 ? ' odd' : ''}`}
         role="row"
         aria-rowindex={i + 2}
         style={{
