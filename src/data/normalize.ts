@@ -1,4 +1,4 @@
-import type { RawOrder } from './types';
+import type { Channel, Order, PaymentMethod, RawOrder, Region, Status } from './types';
 
 export function pickCustomerName(raw: RawOrder): string {
   const name = raw.schemaVersion === 1 ? raw.customer_name : raw.customerName;
@@ -33,4 +33,25 @@ export function parseDate(v: string | number | null | undefined): number | null 
   const iso = ISO_NO_TZ.test(s) ? s + 'Z' : s;
   const t = Date.parse(iso);
   return Number.isNaN(t) ? null : t;
+}
+
+
+export function normalizeOrder(raw: RawOrder): Order {
+  const priority = raw.priority;
+  return {
+    id: raw.id.trim(),
+    customer: pickCustomerName(raw),
+    email: (raw.customerEmail ?? '').trim(),
+    status: (raw.status ?? '').trim().toLowerCase() as Status,
+    amount: parseAmountRupees(raw),
+    currency: (raw.currency ?? 'INR').trim(),
+    createdAt: parseDate(raw.createdAt) ?? 0,
+    updatedAt: parseDate(raw.updatedAt),
+    region: (raw.region ?? '').trim().toUpperCase() as Region,
+    channel: (raw.channel ?? '').trim().toLowerCase() as Channel,
+    priority: priority === 1 || priority === 2 || priority === 3 ? priority : null,
+    paymentMethod: (raw.paymentMethod ?? '').trim().toLowerCase() as PaymentMethod,
+    itemCount: raw.itemCount ?? 0,
+    notes: raw.notes ?? '',
+  };
 }
