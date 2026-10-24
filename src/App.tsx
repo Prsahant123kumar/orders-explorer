@@ -5,7 +5,7 @@ import { useOrders } from './data/useOrders';
 import { Grid } from './grid/Grid';
 import { nextSort, sortOrders } from './grid/sort';
 import type { SortState } from './grid/sort';
-
+import { DetailPanel } from './components/DetailPanel';
 const NO_ORDERS: Order[] = [];
 
 export default function App() {
@@ -14,10 +14,13 @@ export default function App() {
   const [pinned, setPinned] = useState<keyof Order | null>(null);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const anchor = useRef<string | null>(null);
-
+  const [detailId, setDetailId] = useState<string | null>(null);
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const sorted = useMemo(() => sortOrders(orders, sort), [orders, sort]);
-
+  const detail = useMemo(
+    () => (detailId ? (orders.find((o) => o.id === detailId) ?? null) : null),
+    [orders, detailId],
+  );
     function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
     if (event.shiftKey && anchor.current !== null) {
       const from = sorted.findIndex((o) => o.id === anchor.current);
@@ -78,17 +81,21 @@ export default function App() {
           </button>
         </div>
       </header>
-      <main className="main">
-        <Grid
-          orders={sorted}
-          sort={sort}
-          onSort={(key) => setSort((s) => nextSort(s, key))}
-          pinned={pinned}
-          onPin={setPinned}
-          selected={selected}
-          onRowClick={handleRowClick}
-          onToggle={handleToggle}
-        />
+            <main className="main">
+        <div className="grid-wrap">
+          <Grid
+            orders={sorted}
+            sort={sort}
+            onSort={(key) => setSort((s) => nextSort(s, key))}
+            pinned={pinned}
+            onPin={setPinned}
+            selected={selected}
+            onRowClick={handleRowClick}
+            onToggle={handleToggle}
+            onOpen={setDetailId}
+          />
+        </div>
+        {detail && <DetailPanel order={detail} onClose={() => setDetailId(null)} />}
       </main>
     </div>
   );

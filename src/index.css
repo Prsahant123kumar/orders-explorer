@@ -42,8 +42,15 @@ body {
 }
 
 .main {
+  display: flex;
   flex: 1;
   min-height: 0;
+}
+
+.grid-wrap {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
 }
 
 .grid-scroll {
@@ -241,4 +248,74 @@ body {
 
 .grid-scroll:focus .cell.focused {
   outline-color: #1a6fd1;
+}
+
+.detail {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 340px;
+  min-height: 0;
+  border-left: 1px solid #d9dee3;
+  background: #ffffff;
+}
+
+.detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid #d9dee3;
+  background: #f7f8fa;
+}
+
+.detail-head h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.detail-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+}
+
+.detail-list {
+  margin: 0;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  column-gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid #eceff2;
+}
+
+.detail-item dt {
+  color: #52606d;
+}
+
+.detail-item dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.detail-title {
+  margin: 14px 0 6px;
+  font-size: 13px;
+}
+
+.detail-notes {
+  max-height: 280px;
+  margin: 0;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid #d9dee3;
+  border-radius: 4px;
+  background: #f7f9fb;
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }

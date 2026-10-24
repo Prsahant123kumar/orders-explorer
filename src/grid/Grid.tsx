@@ -22,6 +22,7 @@ interface GridProps {
   selected: Set<string>;
   onRowClick: (id: string, event: MouseEvent<HTMLDivElement>) => void;
   onToggle: (id: string) => void;
+  onOpen: (id: string) => void;
 }
 
 export function Grid({
@@ -33,6 +34,7 @@ export function Grid({
   selected,
   onRowClick,
   onToggle,
+  onOpen,
 }: GridProps) {
   const { ref, onScroll, start, end, totalHeight } = useVirtual(orders.length, ROW_HEIGHT);
   const [widths, setWidths] = useState<number[]>(defaultWidths);
@@ -143,6 +145,10 @@ export function Grid({
         event.preventDefault();
         onToggle(orders[row].id);
         break;
+      case 'Enter':
+        event.preventDefault();
+        onOpen(orders[row].id);
+        break;
     }
 
     if (next) {
@@ -161,8 +167,8 @@ export function Grid({
         className={`grid-row${i % 2 === 1 ? ' odd' : ''}${isSelected ? ' selected' : ''}`}
         role="row"
         aria-rowindex={i + 2}
-        aria-selected={isSelected}
         onClick={(e) => onRowClick(item.id, e)}
+        onDoubleClick={() => onOpen(item.id)}
         style={{
           gridTemplateColumns: template,
           height: ROW_HEIGHT,
