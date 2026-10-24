@@ -10,6 +10,7 @@ import { Grid } from './grid/Grid';
 import { nextSort, sortOrders } from './grid/sort';
 import type { SortState } from './grid/sort';
 import { Chips } from './filters/Chips';
+import { EmptyState } from './components/EmptyState';
 const NO_ORDERS: Order[] = [];
 
 export default function App() {
@@ -108,6 +109,7 @@ export default function App() {
             onToggle={handleToggle}
             onOpen={setDetailId}
           />
+          {sorted.length === 0 && <EmptyState onClear={() => setGroups([])} />}
         </div>
         {detail && <DetailPanel order={detail} onClose={() => setDetailId(null)} />}
       </main>
