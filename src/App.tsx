@@ -5,6 +5,7 @@ import { EmptyState } from './components/EmptyState';
 import { ErrorBanner } from './components/ErrorBanner';
 import type { Order } from './data/types';
 import { useOrders } from './data/useOrders';
+import { buildCsv, downloadCsv } from './export/csv';
 import { Chips } from './filters/Chips';
 import { applyFilter } from './filters/engine';
 import { FilterBuilder } from './filters/FilterBuilder';
@@ -52,6 +53,13 @@ export default function App() {
   const filtered = useMemo(() => applyFilter(orders, deferredGroups), [orders, deferredGroups]);
   const sorted = useMemo(() => sortOrders(filtered, sort), [filtered, sort]);
 
+  const visibleIds = useMemo(() => new Set(filtered.map((o) => o.id)), [filtered]);
+  const hiddenCount = useMemo(() => {
+    let count = 0;
+    for (const id of selected) if (!visibleIds.has(id)) count++;
+    return count;
+  }, [selected, visibleIds]);
+
   const detail = useMemo(
     () => (detailId ? (orders.find((o) => o.id === detailId) ?? null) : null),
     [orders, detailId],
@@ -94,6 +102,17 @@ export default function App() {
     });
   }
 
+  function handleDeselectHidden() {
+    setSelected((prev) => new Set([...prev].filter((id) => visibleIds.has(id))));
+  }
+
+  function handleExport() {
+    const chosen = orders.filter((o) => selected.has(o.id));
+    const rows = sortOrders(chosen, sort);
+    const day = new Date().toISOString().slice(0, 10);
+    downloadCsv(buildCsv(rows), `orders-selected-${rows.length}-${day}.csv`);
+  }
+
   if (state.status === 'loading') return <p className="message">Loading orders...</p>;
   if (state.status === 'error') return <p className="message">Failed to load: {state.message}</p>;
 
@@ -105,7 +124,20 @@ export default function App() {
           <span>
             {sorted.length.toLocaleString('en-IN')} of {orders.length.toLocaleString('en-IN')} orders
           </span>
-          <span className="selected-count">{selected.size.toLocaleString('en-IN')} selected</span>
+          <span className="selected-count">
+            {selected.size.toLocaleString('en-IN')} selected
+            {hiddenCount > 0 && (
+              <span className="hidden-count">
+                {' '}
+                ({hiddenCount.toLocaleString('en-IN')} hidden by filter)
+              </span>
+            )}
+          </span>
+          {hiddenCount > 0 && (
+            <button type="button" className="btn" onClick={handleDeselectHidden}>
+              Deselect hidden
+            </button>
+          )}
           <button
             type="button"
             className="btn"
@@ -116,6 +148,14 @@ export default function App() {
             }}
           >
             Clear selection
+          </button>
+          <button
+            type="button"
+            className="btn primary"
+            disabled={selected.size === 0}
+            onClick={handleExport}
+          >
+            Export {selected.size.toLocaleString('en-IN')} {selected.size === 1 ? 'row' : 'rows'}
           </button>
         </div>
       </header>
