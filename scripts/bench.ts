@@ -67,7 +67,7 @@ console.log(`\n${orders.length} orders\n`);
 console.log('FILTER');
 const cases: [string, Group[]][] = [
   ['status is shipped or delivered', [group(enumCond('status', ['shipped', 'delivered']))]],
-  ['amount > 5000', [group(amountGt('5000'))]],
+  ['amount > 1000', [group(amountGt('1000'))]],
   ['customer contains "an"', [group(customerContains('an'))]],
   ['notes contains "urgent"', [group(notesContains('urgent'))]],
   ['created between two dates', [group(createdBetween('2025-01-01', '2025-06-30'))]],
@@ -75,7 +75,7 @@ const cases: [string, Group[]][] = [
     '(status OR region) AND amount AND customer',
     [
       group(enumCond('status', ['shipped']), enumCond('region', ['SOUTH', 'WEST'])),
-      group(amountGt('5000')),
+      group(amountGt('1000')),
       group(customerContains('a')),
     ],
   ],
@@ -87,7 +87,16 @@ for (const [name, groups] of cases) {
 }
 
 console.log('\nSORT (ascending, all rows)');
-const keys: (keyof Order)[] = ['id', 'customer', 'email', 'status', 'amount', 'createdAt', 'updatedAt', 'notes'];
+const keys: (keyof Order)[] = [
+  'id',
+  'customer',
+  'email',
+  'status',
+  'amount',
+  'createdAt',
+  'updatedAt',
+  'notes',
+];
 for (const key of keys) {
   report(`sort by ${key}`, time(() => sortOrders(orders, { key, dir: 'asc' }), 3));
 }

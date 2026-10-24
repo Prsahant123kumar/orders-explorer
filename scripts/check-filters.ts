@@ -59,13 +59,19 @@ check(
 );
 
 check(
-  '(shipped OR delivered) AND amount > 5000',
+  '(shipped OR delivered) AND amount > 1000',
   applyFilter(orders, [
     group(enumCond('status', ['shipped']), enumCond('status', ['delivered'])),
-    group(numberCond('gt', '5000')),
+    group(numberCond('gt', '1000')),
   ]).length,
-  orders.filter((o) => (o.status === 'shipped' || o.status === 'delivered') && o.amount > 5000)
+  orders.filter((o) => (o.status === 'shipped' || o.status === 'delivered') && o.amount > 1000)
     .length,
+);
+
+check(
+  'amount greater than 5000 matches nothing',
+  applyFilter(orders, [group(numberCond('gt', '5000'))]).length,
+  orders.filter((o) => o.amount > 5000).length,
 );
 
 check(
