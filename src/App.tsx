@@ -9,7 +9,7 @@ import type { FilterState } from './filters/types';
 import { Grid } from './grid/Grid';
 import { nextSort, sortOrders } from './grid/sort';
 import type { SortState } from './grid/sort';
-
+import { Chips } from './filters/Chips';
 const NO_ORDERS: Order[] = [];
 
 export default function App() {
@@ -94,6 +94,7 @@ export default function App() {
         </div>
       </header>
       <FilterBuilder groups={groups} onChange={setGroups} />
+      <Chips groups={groups} onChange={setGroups} />
       <main className="main">
         <div className="grid-wrap">
           <Grid

@@ -449,3 +449,71 @@ body {
   height: 24px;
   margin-left: 28px;
 }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  max-height: 84px;
+  padding: 6px 12px;
+  overflow: auto;
+  border-bottom: 1px solid #d9dee3;
+  background: #ffffff;
+}
+
+.chip-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 340px;
+  height: 24px;
+  padding: 0 2px 0 9px;
+  border: 1px solid #b5cde8;
+  border-radius: 12px;
+  background: #e8f1fb;
+  color: #0f4c94;
+}
+
+.chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-x {
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chip-x:hover {
+  background: #c9ddf3;
+}
+
+.chip-sep {
+  font-size: 11px;
+  color: #52606d;
+}
+
+.chip-sep.strong {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.btn.small.clear-all {
+  margin-left: 4px;
+}
