@@ -1,26 +1,34 @@
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { DetailPanel } from './components/DetailPanel';
+import { EmptyState } from './components/EmptyState';
+import { ErrorBanner } from './components/ErrorBanner';
 import type { Order } from './data/types';
 import { useOrders } from './data/useOrders';
+import { Chips } from './filters/Chips';
 import { applyFilter } from './filters/engine';
 import { FilterBuilder } from './filters/FilterBuilder';
 import type { FilterState } from './filters/types';
 import { Grid } from './grid/Grid';
 import { nextSort, sortOrders } from './grid/sort';
 import type { SortState } from './grid/sort';
-import { Chips } from './filters/Chips';
-import { EmptyState } from './components/EmptyState';
+import { parseSearch } from './url/codec';
+import { useUrlSync } from './url/useUrlSync';
+
 const NO_ORDERS: Order[] = [];
 
 export default function App() {
   const state = useOrders();
-  const [sort, setSort] = useState<SortState | null>(null);
-  const [pinned, setPinned] = useState<keyof Order | null>(null);
-  const [groups, setGroups] = useState<FilterState>([]);
+  const [initial] = useState(() => parseSearch(window.location.search));
+  const [sort, setSort] = useState<SortState | null>(initial.state.sort);
+  const [pinned, setPinned] = useState<keyof Order | null>(initial.state.pinned);
+  const [groups, setGroups] = useState<FilterState>(initial.state.groups);
+  const [urlErrors, setUrlErrors] = useState<string[]>(initial.errors);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const anchor = useRef<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+
+  useUrlSync({ groups, sort, pinned });
 
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const deferredGroups = useDeferredValue(groups);
@@ -94,6 +102,7 @@ export default function App() {
           </button>
         </div>
       </header>
+      <ErrorBanner messages={urlErrors} onDismiss={() => setUrlErrors([])} />
       <FilterBuilder groups={groups} onChange={setGroups} />
       <Chips groups={groups} onChange={setGroups} />
       <main className="main">

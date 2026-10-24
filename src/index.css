@@ -556,3 +556,25 @@ body {
 .btn.primary:hover:not(:disabled) {
   background: #155cae;
 }
+
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e6c36a;
+  background: #fff6dc;
+  color: #5c4300;
+}
+
+.banner ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.banner .btn.small {
+  flex: none;
+  margin-left: 0;
+}
