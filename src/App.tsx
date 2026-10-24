@@ -1,27 +1,37 @@
-import { useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
+import { DetailPanel } from './components/DetailPanel';
 import type { Order } from './data/types';
 import { useOrders } from './data/useOrders';
+import { applyFilter } from './filters/engine';
+import { FilterBuilder } from './filters/FilterBuilder';
+import type { FilterState } from './filters/types';
 import { Grid } from './grid/Grid';
 import { nextSort, sortOrders } from './grid/sort';
 import type { SortState } from './grid/sort';
-import { DetailPanel } from './components/DetailPanel';
+
 const NO_ORDERS: Order[] = [];
 
 export default function App() {
   const state = useOrders();
   const [sort, setSort] = useState<SortState | null>(null);
   const [pinned, setPinned] = useState<keyof Order | null>(null);
+  const [groups, setGroups] = useState<FilterState>([]);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const anchor = useRef<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
-  const sorted = useMemo(() => sortOrders(orders, sort), [orders, sort]);
+  const deferredGroups = useDeferredValue(groups);
+  const filtered = useMemo(() => applyFilter(orders, deferredGroups), [orders, deferredGroups]);
+  const sorted = useMemo(() => sortOrders(filtered, sort), [filtered, sort]);
+
   const detail = useMemo(
     () => (detailId ? (orders.find((o) => o.id === detailId) ?? null) : null),
     [orders, detailId],
   );
-    function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
+
+  function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
     if (event.shiftKey && anchor.current !== null) {
       const from = sorted.findIndex((o) => o.id === anchor.current);
       const to = sorted.findIndex((o) => o.id === id);
@@ -66,13 +76,15 @@ export default function App() {
       <header className="topbar">
         <h1>Orders Explorer</h1>
         <div className="topbar-right">
-          <span>{sorted.length.toLocaleString('en-IN')} orders</span>
+          <span>
+            {sorted.length.toLocaleString('en-IN')} of {orders.length.toLocaleString('en-IN')} orders
+          </span>
           <span className="selected-count">{selected.size.toLocaleString('en-IN')} selected</span>
           <button
             type="button"
             className="btn"
             disabled={selected.size === 0}
-                        onClick={() => {
+            onClick={() => {
               setSelected(new Set());
               anchor.current = null;
             }}
@@ -81,7 +93,8 @@ export default function App() {
           </button>
         </div>
       </header>
-            <main className="main">
+      <FilterBuilder groups={groups} onChange={setGroups} />
+      <main className="main">
         <div className="grid-wrap">
           <Grid
             orders={sorted}
