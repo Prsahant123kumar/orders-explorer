@@ -21,9 +21,19 @@ interface GridProps {
   onPin: (key: keyof Order | null) => void;
   selected: Set<string>;
   onRowClick: (id: string, event: MouseEvent<HTMLDivElement>) => void;
+  onToggle: (id: string) => void;
 }
 
-export function Grid({ orders, sort, onSort, pinned, onPin, selected, onRowClick }: GridProps) {
+export function Grid({
+  orders,
+  sort,
+  onSort,
+  pinned,
+  onPin,
+  selected,
+  onRowClick,
+  onToggle,
+}: GridProps) {
   const { ref, onScroll, start, end, totalHeight } = useVirtual(orders.length, ROW_HEIGHT);
   const [widths, setWidths] = useState<number[]>(defaultWidths);
   const [focus, setFocus] = useState<FocusPos | null>(null);
@@ -128,6 +138,10 @@ export function Grid({ orders, sort, onSort, pinned, onPin, selected, onRowClick
         break;
       case 'End':
         next = ctrl ? { row: lastRow, col: lastCol } : { row, col: lastCol };
+        break;
+      case ' ':
+        event.preventDefault();
+        onToggle(orders[row].id);
         break;
     }
 

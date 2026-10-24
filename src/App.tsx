@@ -45,6 +45,16 @@ export default function App() {
     }
   }
 
+  function handleToggle(id: string) {
+    anchor.current = id;
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   if (state.status === 'loading') return <p className="message">Loading orders...</p>;
   if (state.status === 'error') return <p className="message">Failed to load: {state.message}</p>;
 
@@ -77,6 +87,7 @@ export default function App() {
           onPin={setPinned}
           selected={selected}
           onRowClick={handleRowClick}
+          onToggle={handleToggle}
         />
       </main>
     </div>
