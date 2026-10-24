@@ -7,8 +7,6 @@ export interface SortState {
   dir: SortDir;
 }
 
-const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
-
 export function nextSort(current: SortState | null, key: keyof Order): SortState {
   if (current && current.key === key) {
     return { key, dir: current.dir === 'asc' ? 'desc' : 'asc' };
@@ -17,20 +15,48 @@ export function nextSort(current: SortState | null, key: keyof Order): SortState
 }
 
 export function sortOrders(orders: Order[], sort: SortState | null): Order[] {
-  if (!sort) return orders;
+  if (!sort || orders.length === 0) return orders;
+
   const { key, dir } = sort;
   const sign = dir === 'asc' ? 1 : -1;
+  const n = orders.length;
+  const empty = new Uint8Array(n);
+  const index = new Array<number>(n);
+  for (let i = 0; i < n; i++) index[i] = i;
 
-  return [...orders].sort((a, b) => {
-    const x = a[key];
-    const y = b[key];
-    const xEmpty = x === null;
-    const yEmpty = y === null;
-    if (xEmpty || yEmpty) {
-      if (xEmpty && yEmpty) return 0;
-      return xEmpty ? 1 : -1;
+  const sample = orders.find((o) => o[key] !== null)?.[key];
+
+  if (typeof sample === 'number') {
+    const nums = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      const value = orders[i][key];
+      if (typeof value === 'number') nums[i] = value;
+      else empty[i] = 1;
     }
-    if (typeof x === 'number' && typeof y === 'number') return (x - y) * sign;
-    return collator.compare(String(x), String(y)) * sign;
-  });
+    index.sort((a, b) => {
+      if (empty[a] || empty[b]) return empty[a] === empty[b] ? 0 : empty[a] ? 1 : -1;
+      return (nums[a] - nums[b]) * sign;
+    });
+  } else {
+    const strings = new Array<string>(n);
+    for (let i = 0; i < n; i++) {
+      const value = orders[i][key];
+      if (value === null) {
+        empty[i] = 1;
+        strings[i] = '';
+      } else {
+        strings[i] = String(value).toLowerCase();
+      }
+    }
+    index.sort((a, b) => {
+      if (empty[a] || empty[b]) return empty[a] === empty[b] ? 0 : empty[a] ? 1 : -1;
+      const x = strings[a];
+      const y = strings[b];
+      if (x < y) return -sign;
+      if (x > y) return sign;
+      return 0;
+    });
+  }
+
+  return index.map((i) => orders[i]);
 }
