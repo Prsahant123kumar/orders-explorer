@@ -229,3 +229,16 @@ body {
   opacity: 0.5;
   cursor: default;
 }
+
+.grid-scroll:focus {
+  outline: none;
+}
+
+.cell.focused {
+  outline: 2px solid #9fb8d1;
+  outline-offset: -2px;
+}
+
+.grid-scroll:focus .cell.focused {
+  outline-color: #1a6fd1;
+}
