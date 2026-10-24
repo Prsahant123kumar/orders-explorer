@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "check:data": "tsx scripts/check-data.ts",
+    "check:filters": "tsx scripts/check-filters.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
