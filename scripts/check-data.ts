@@ -28,6 +28,6 @@ check('createdAt always parsed', orders.every((o) => o.createdAt > 0));
 check('currency is INR', orders.every((o) => o.currency === 'INR'));
 check('priority is 1, 2, 3 or null', orders.every((o) => [1, 2, 3, null].includes(o.priority)));
 check('customer names present', orders.every((o) => o.customer.length > 0));
-
+check('ids look like ORD- plus 7 digits', orders.every((o) => /^ORD-\d{7}$/.test(o.id)));
 console.log(failed === 0 ? '\nAll checks passed' : `\n${failed} check(s) failed`);
 process.exit(failed === 0 ? 0 : 1);

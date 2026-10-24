@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { DetailPanel } from './components/DetailPanel';
 import { EmptyState } from './components/EmptyState';
@@ -24,11 +24,28 @@ export default function App() {
   const [pinned, setPinned] = useState<keyof Order | null>(initial.state.pinned);
   const [groups, setGroups] = useState<FilterState>(initial.state.groups);
   const [urlErrors, setUrlErrors] = useState<string[]>(initial.errors);
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => initial.state.selected);
   const anchor = useRef<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
 
-  useUrlSync({ groups, sort, pinned });
+  useUrlSync({ groups, sort, pinned, selected });
+
+  const checkedSelection = useRef(false);
+  useEffect(() => {
+    if (state.status !== 'ready' || checkedSelection.current) return;
+    checkedSelection.current = true;
+    if (selected.size === 0) return;
+    const known = new Set(state.orders.map((o) => o.id));
+    const kept = new Set([...selected].filter((id) => known.has(id)));
+    if (kept.size !== selected.size) {
+      const dropped = selected.size - kept.size;
+      setSelected(kept);
+      setUrlErrors((prev) => [
+        ...prev,
+        `${dropped.toLocaleString('en-IN')} selected order(s) in the link do not exist and were ignored.`,
+      ]);
+    }
+  }, [state, selected]);
 
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const deferredGroups = useDeferredValue(groups);

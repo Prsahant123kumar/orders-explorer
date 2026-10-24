@@ -16,11 +16,12 @@ import type {
 } from '../filters/types';
 import { COLUMNS } from '../grid/columns';
 import type { SortState } from '../grid/sort';
-
+import { decodeSelection, encodeSelection } from './selection';
 export interface UrlState {
   groups: FilterState;
   sort: SortState | null;
   pinned: keyof Order | null;
+  selected: Set<string>;
 }
 
 export interface ParseResult {
@@ -54,7 +55,8 @@ export function buildSearch(state: UrlState): string {
   }
   if (state.sort) params.set('sort', `${state.sort.key}:${state.sort.dir}`);
   if (state.pinned) params.set('pin', state.pinned);
-  const text = params.toString();
+  if (state.selected.size > 0) params.set('sel', encodeSelection(state.selected));
+  const text = params.toString().replace(/%2C/gi, ',');
   return text ? `?${text}` : '';
 }
 
@@ -161,6 +163,7 @@ export function parseSearch(search: string): ParseResult {
   let groups: FilterState = [];
   let sort: SortState | null = null;
   let pinned: keyof Order | null = null;
+  let selected = new Set<string>();
 
   try {
     const params = new URLSearchParams(search);
@@ -182,14 +185,22 @@ export function parseSearch(search: string): ParseResult {
     const p = params.get('pin');
     if (p !== null) {
       if (COLUMN_KEYS.has(p)) pinned = p as keyof Order;
-      else errors.push('The pinned column in the link is not valid, so no column is pinned.');
+    else errors.push('The pinned column in the link is not valid, so no column is pinned.');
+    }
+
+    const sel = params.get('sel');
+    if (sel !== null) {
+      const decoded = decodeSelection(sel);
+      if (decoded) selected = decoded;
+      else errors.push('The selected rows in the link could not be read, so nothing is selected.');
     }
   } catch {
     errors.push('The link could not be read, so the default view is shown.');
     groups = [];
     sort = null;
     pinned = null;
+    selected = new Set();
   }
 
-  return { state: { groups, sort, pinned }, errors };
+   return { state: { groups, sort, pinned, selected }, errors };
 }

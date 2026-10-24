@@ -28,7 +28,7 @@ const created = {
 } as Condition;
 const priority = { ...createCondition('priority'), values: ['none', '1'] } as Condition;
 
-const empty: UrlState = { groups: [], sort: null, pinned: null };
+const empty: UrlState = { groups: [], sort: null, pinned: null, selected: new Set() };
 check('default state gives an empty query', buildSearch(empty) === '');
 
 const blank = parseSearch('');
@@ -41,6 +41,7 @@ const full: UrlState = {
   groups: [group(status, customer), group(amount, priority), group(created)],
   sort: { key: 'amount', dir: 'desc' },
   pinned: 'customer',
+  selected: new Set(['ORD-0001234', 'ORD-0001235', 'ORD-0001236', 'ORD-0002001']),
 };
 const search = buildSearch(full);
 const back = parseSearch(search);
@@ -52,6 +53,13 @@ check(
   back.state.sort?.key === 'amount' &&
     back.state.sort.dir === 'desc' &&
     back.state.pinned === 'customer',
+);
+check('selection is compact', search.includes('sel=1234-1236,2001'), search);
+check(
+  'round trip keeps the selection',
+  back.state.selected.size === 4 &&
+    back.state.selected.has('ORD-0001235') &&
+    back.state.selected.has('ORD-0002001'),
 );
 
 const broken = [
@@ -70,6 +78,11 @@ const broken = [
   '?sort=amount:sideways',
   '?sort=bogus:asc',
   '?sort=amount',
+  '?sel=abc',
+  '?sel=5-1',
+  '?sel=1,,2',
+  '?sel=1-99999999',
+  '?sel=ORD-0001234',
   '?pin=bogus',
 ];
 
