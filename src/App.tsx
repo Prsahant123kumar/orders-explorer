@@ -50,10 +50,10 @@ export default function App() {
 
   const orders = state.status === 'ready' ? state.orders : NO_ORDERS;
   const deferredGroups = useDeferredValue(groups);
-  const filtered = useMemo(() => applyFilter(orders, deferredGroups), [orders, deferredGroups]);
-  const sorted = useMemo(() => sortOrders(filtered, sort), [filtered, sort]);
+  const ordered = useMemo(() => sortOrders(orders, sort), [orders, sort]);
+  const sorted = useMemo(() => applyFilter(ordered, deferredGroups), [ordered, deferredGroups]);
 
-  const visibleIds = useMemo(() => new Set(filtered.map((o) => o.id)), [filtered]);
+  const visibleIds = useMemo(() => new Set(sorted.map((o) => o.id)), [sorted]);
   const hiddenCount = useMemo(() => {
     let count = 0;
     for (const id of selected) if (!visibleIds.has(id)) count++;
@@ -106,9 +106,8 @@ export default function App() {
     setSelected((prev) => new Set([...prev].filter((id) => visibleIds.has(id))));
   }
 
-  function handleExport() {
-    const chosen = orders.filter((o) => selected.has(o.id));
-    const rows = sortOrders(chosen, sort);
+    function handleExport() {
+    const rows = ordered.filter((o) => selected.has(o.id));
     const day = new Date().toISOString().slice(0, 10);
     downloadCsv(buildCsv(rows), `orders-selected-${rows.length}-${day}.csv`);
   }
