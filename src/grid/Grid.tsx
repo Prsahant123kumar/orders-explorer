@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 import type { Order } from '../data/types';
 import { COLUMNS, MIN_COLUMN_WIDTH, buildTemplate, defaultWidths, sumWidths } from './columns';
 import type { SortState } from './sort';
 import { useVirtual } from './useVirtual';
-
-export const ROW_HEIGHT = 32;
+import { ROW_HEIGHT, Row } from './Row';
 export const HEADER_HEIGHT = 32;
 
 interface FocusPos {
@@ -102,6 +101,13 @@ export function Grid({
     setFocus({ row: r, col: c });
     scrollCellIntoView(r, c);
   }
+  const moveFocusRef = useRef(moveFocus);
+  useEffect(() => {
+    moveFocusRef.current = moveFocus;
+  });
+  const handleCellClick = useCallback((row: number, col: number) => {
+    moveFocusRef.current(row, col);
+  }, []);
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.target !== event.currentTarget || orders.length === 0) return;
@@ -160,43 +166,20 @@ export function Grid({
   const rows = [];
   for (let i = start; i < end; i++) {
     const item = orders[i];
-    const isSelected = selected.has(item.id);
     rows.push(
-      <div
+      <Row
         key={item.id}
-        className={`grid-row${i % 2 === 1 ? ' odd' : ''}${isSelected ? ' selected' : ''}`}
-        role="row"
-        aria-rowindex={i + 2}
-        onClick={(e) => onRowClick(item.id, e)}
-        onDoubleClick={() => onOpen(item.id)}
-        style={{
-          gridTemplateColumns: template,
-          height: ROW_HEIGHT,
-          transform: `translateY(${i * ROW_HEIGHT}px)`,
-        }}
-      >
-        {order.map((colIndex, k) => {
-          const col = COLUMNS[colIndex];
-          const text = col.format(item);
-          const classes = ['cell'];
-          if (col.align === 'right') classes.push('num');
-          if (col.key === pinned) classes.push('pinned');
-          if (i === focusRow && k === focusCol) classes.push('focused');
-          return (
-            <div
-              key={col.key}
-              id={`cell-${i}-${k}`}
-              role="gridcell"
-              aria-colindex={k + 1}
-              className={classes.join(' ')}
-              title={text}
-              onClick={() => moveFocus(i, k)}
-            >
-              {text}
-            </div>
-          );
-        })}
-      </div>,
+        item={item}
+        index={i}
+        selected={selected.has(item.id)}
+        focusCol={i === focusRow ? focusCol : -1}
+        template={template}
+        colOrder={order}
+        pinned={pinned}
+        onRowClick={onRowClick}
+        onOpen={onOpen}
+        onCellClick={handleCellClick}
+      />,
     );
   }
 

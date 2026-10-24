@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { DetailPanel } from './components/DetailPanel';
 import { EmptyState } from './components/EmptyState';
@@ -65,34 +65,37 @@ export default function App() {
     [orders, detailId],
   );
 
-  function handleRowClick(id: string, event: MouseEvent<HTMLDivElement>) {
-    if (event.shiftKey && anchor.current !== null) {
-      const from = sorted.findIndex((o) => o.id === anchor.current);
-      const to = sorted.findIndex((o) => o.id === id);
-      if (from !== -1 && to !== -1) {
-        const lo = Math.min(from, to);
-        const hi = Math.max(from, to);
-        const range = new Set<string>();
-        for (let i = lo; i <= hi; i++) range.add(sorted[i].id);
-        setSelected(range);
-        return;
+    const handleRowClick = useCallback(
+    (id: string, event: MouseEvent<HTMLDivElement>) => {
+      if (event.shiftKey && anchor.current !== null) {
+        const from = sorted.findIndex((o) => o.id === anchor.current);
+        const to = sorted.findIndex((o) => o.id === id);
+        if (from !== -1 && to !== -1) {
+          const lo = Math.min(from, to);
+          const hi = Math.max(from, to);
+          const range = new Set<string>();
+          for (let i = lo; i <= hi; i++) range.add(sorted[i].id);
+          setSelected(range);
+          return;
+        }
       }
-    }
 
-    anchor.current = id;
-    if (event.ctrlKey || event.metaKey) {
-      setSelected((prev) => {
-        const next = new Set(prev);
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        return next;
-      });
-    } else {
-      setSelected(new Set([id]));
-    }
-  }
+      anchor.current = id;
+      if (event.ctrlKey || event.metaKey) {
+        setSelected((prev) => {
+          const next = new Set(prev);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+        });
+      } else {
+        setSelected(new Set([id]));
+      }
+    },
+    [sorted],
+  );
 
-  function handleToggle(id: string) {
+    const handleToggle = useCallback((id: string) => {
     anchor.current = id;
     setSelected((prev) => {
       const next = new Set(prev);
@@ -100,7 +103,7 @@ export default function App() {
       else next.add(id);
       return next;
     });
-  }
+  }, []);
 
   function handleDeselectHidden() {
     setSelected((prev) => new Set([...prev].filter((id) => visibleIds.has(id))));
