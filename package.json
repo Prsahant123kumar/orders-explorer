@@ -8,6 +8,7 @@
     "check:filters": "tsx scripts/check-filters.ts",
     "check:url": "tsx scripts/check-url.ts",
     "check:csv": "tsx scripts/check-csv.ts",
+    "bench": "tsx scripts/bench.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
