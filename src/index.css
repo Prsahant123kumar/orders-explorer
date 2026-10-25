@@ -583,3 +583,32 @@ body {
   font-weight: 400;
   color: #8a5a00;
 }
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #1a6fd1;
+  outline-offset: 1px;
+}
+
+.header-cell:focus-visible {
+  outline: 2px solid #1a6fd1;
+  outline-offset: -2px;
+}
+
+.topbar-right {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.btn.primary:disabled {
+  border-color: #c9d0d6;
+  background: #c9d0d6;
+  color: #ffffff;
+}

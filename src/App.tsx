@@ -123,10 +123,10 @@ export default function App() {
       <header className="topbar">
         <h1>Orders Explorer</h1>
         <div className="topbar-right">
-          <span>
+          <span aria-live="polite">
             {sorted.length.toLocaleString('en-IN')} of {orders.length.toLocaleString('en-IN')} orders
           </span>
-          <span className="selected-count">
+          <span className="selected-count" aria-live="polite">
             {selected.size.toLocaleString('en-IN')} selected
             {hiddenCount > 0 && (
               <span className="hidden-count">

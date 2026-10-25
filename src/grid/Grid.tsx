@@ -215,12 +215,19 @@ export function Grid({
             if (col.align === 'right') classes.push('num');
             if (isPinned) classes.push('pinned');
             return (
-              <div
+                            <div
                 key={col.key}
                 role="columnheader"
                 aria-sort={ariaSort}
                 className={classes.join(' ')}
+                tabIndex={0}
                 onClick={() => onSort(col.key)}
+                onKeyDown={(e) => {
+                  if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    onSort(col.key);
+                  }
+                }}
               >
                 {col.label}
                 {active && <span className="sort-icon">{sort.dir === 'asc' ? ' \u25B2' : ' \u25BC'}</span>}
