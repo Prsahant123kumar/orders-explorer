@@ -91,9 +91,12 @@ for (const query of broken) {
   try {
     const result = parseSearch(query);
     check(`broken ${label} is reported`, result.errors.length > 0);
-    check(
+        check(
       `broken ${label} falls back to defaults`,
-      result.state.groups.length === 0 || query.startsWith('?sort') || query.startsWith('?pin'),
+      result.state.groups.length === 0 &&
+        result.state.selected.size === 0 &&
+        (result.state.sort === null || query.startsWith('?pin')) &&
+        (result.state.pinned === null || query.startsWith('?sort')),
     );
   } catch (error) {
     check(`broken ${label} must not throw`, false, String(error));
